@@ -5,7 +5,7 @@ description: Learn how to create content using Markdown or MDX with Astro
 i18nReady: true
 ---
 
-[Markdown](https://daringfireball.net/projects/markdown/) is commonly used to author text-heavy content like blog posts and documentation. Astro includes built-in support for standard Markdown (`.md`) files. 
+[Markdown](https://daringfireball.net/projects/markdown/) is commonly used to author text-heavy content like blog posts and documentation. Astro includes built-in support for standard Markdown (`.md`, `.markdown`, `.mdown`, `.mkdn`, `.mkd`, `.mdwn`) files. 
 
 With the [@astrojs/mdx integration](/en/guides/integrations-guide/mdx/) installed, Astro also supports [MDX](https://mdxjs.com/) (`.mdx`) files which bring added features like support for JavaScript expressions and components in your Markdown content. 
 
@@ -13,7 +13,7 @@ Use either or both types of files to write your Markdown content!
 
 ## Markdown and MDX Pages
 
-Astro treats any `.md` or `.mdx` file inside of the `/src/pages/` directory as a page. Placing a file in this directory, or any sub-directory, will automatically build a page route using the pathname of the file.
+Astro treats any `.md` (or alternative supported extension) or `.mdx` file inside of the `/src/pages/` directory as a page. Placing a file in this directory, or any sub-directory, will automatically build a page route using the pathname of the file.
 
 📚 Read more about Astro's [file-based routing](/en/core-concepts/routing/).
 
@@ -160,7 +160,7 @@ Astro.props = {
 
 #### Example: Using one Layout for `.md`, `.mdx`, and `.astro` files
 
-A single Astro layout can be written to receive the `frontmatter` object from `.md` and `.mdx` files, as well as any named props passed from `.astro` files.
+A single Astro layout can be written to receive the `frontmatter` object from `.md` (or `.markdown` etc.) and `.mdx` files, as well as any named props passed from `.astro` files.
 
 In the example below, the layout will display the page title either from an Astro component passing a `title` attribute or from a frontmatter YAML `title` property:
 
@@ -186,7 +186,7 @@ These ids will be added _after_ all the other plugins are executed, so if you ha
 
 ### Markdown Drafts
 
-`draft: true` is an optional frontmatter value that will mark an individual `.md` page or post as "unpublished." By default, this page will be excluded from the site build.
+`draft: true` is an optional frontmatter value that will mark an individual `.md` (or `.markdown` etc.) page or post as "unpublished." By default, this page will be excluded from the site build.
 
 Markdown pages without the `draft` property or those with `draft: false` are unaffected and will be included in the final build.
 
@@ -236,10 +236,16 @@ export default defineConfig({
 You can also pass the `--drafts` flag when running `astro build` to build draft pages!
 :::
 
+### Escaping special characters
+
+Certain characters have a special meaning in Markdown and MDX. You may need to use a different syntax if you want to display them. To do this, you can use [HTML entities](https://developer.mozilla.org/en-US/docs/Glossary/Entity) for these characters instead.
+
+For example, to prevent `<` being interpreted as the beginning of an HTML element, write `&lt;`. Or, to prevent `{` being interpreted as the beginning of a JavaScript expression in MDX, write `&lcub;`.
+
 ### Variables and Components
 
 :::caution[Deprecated]
-Astro v1.0 **only supports standard Markdown in `.md` files**. The ability to use [components or JSX in Markdown pages is no longer enabled by default](/en/migrate/#deprecated-components-and-jsx-in-markdown) and support will eventually be removed entirely. 
+Astro v1.0 **only supports standard Markdown in `.md` (or `.markdown` etc.) files**. The ability to use [components or JSX in Markdown pages is no longer enabled by default](/en/migrate/#deprecated-components-and-jsx-in-markdown) and support will eventually be removed entirely. 
 
 Astro config supports a [legacy flag](/en/reference/configuration-reference/#legacyastroflavoredmarkdown) that will re-enable these features in Markdown pages until you are able to migrate to MDX in Astro. The Astro MDX integration is the recommended path forward if you need more features than standard Markdown provides.
 :::
@@ -250,7 +256,7 @@ Please install the official [`@astrojs/mdx`](/en/guides/integrations-guide/mdx/)
 
 - [Astro components](/en/core-concepts/astro-components/) or [UI framework components](/en/core-concepts/framework-components/) in MDX (`.mdx`) files.
 
-See the migration guide for help [converting your existing Astro `.md` files to `.mdx`](/en/migrate/#converting-existing-md-files-to-mdx).
+See the migration guide for help [converting your existing Astro `.md` ( or `.markdown` etc.) files to `.mdx`](/en/migrate/#converting-existing-md-files-to-mdx).
 
 ## MDX Features
 
@@ -266,6 +272,21 @@ With the `@astrojs/mdx` integration, you can use [variables and JSX expressions 
 With the `@astrojs/mdx` integration, you can use Astro or UI framework components in MDX (`.mdx`) files just as you would [use them in any other Astro component](/en/core-concepts/framework-components/#using-framework-components).
 
 Don't forget to include a `client:directive` if necessary!
+
+```astro title="src/pages/about.mdx" {5-6} /<.+\/>/
+---
+layout: ../layouts/BaseLayout.astro
+title: About me
+---
+import Button from '../components/Button.astro';
+import ReactCounter from '../components/ReactCounter.jsx';
+
+I live on **Mars** but feel free to <Button title="Contact me" />.
+
+Here is my counter component, working in MDX:
+
+<ReactCounter client:load />
+```
 
 
 ## Importing Markdown
@@ -400,7 +421,7 @@ The instructions below are for configuring standard Markdown. To configure MDX p
 
 Astro supports third-party [remark](https://github.com/remarkjs/remark) and [rehype](https://github.com/rehypejs/rehype) plugins for Markdown. These plugins allow you to extend your Markdown with new capabilities, like [auto-generating a table of contents](https://github.com/remarkjs/remark-toc), [applying accessible emoji labels](https://github.com/florianeckerstorfer/remark-a11y-emoji), and more. We encourage you to browse [awesome-remark](https://github.com/remarkjs/awesome-remark) and [awesome-rehype](https://github.com/rehypejs/awesome-rehype) for popular plugins!
 
-This example applies the [remark-toc](https://github.com/remarkjs/remark-toc) and [rehype-minify](https://github.com/rehypejs/rehype-minify) plugins. See each project's README for installation instructions.
+This example applies the [remark-toc](https://github.com/remarkjs/remark-toc) and [rehype-accessible-emojis](https://www.npmjs.com/package/rehype-accessible-emojis) plugins. See each project's README for installation instructions.
 
 :::tip
 Astro applies the [GitHub-flavored Markdown](https://github.com/remarkjs/remark-gfm) and [Smartypants](https://github.com/silvenon/remark-smartypants) plugins by default. This brings some niceties like generating clickable links from text and formatting quotes for readability. When adding your own plugins, you can preserve these defaults with the `extendDefaultPlugins` flag.
@@ -409,12 +430,12 @@ Astro applies the [GitHub-flavored Markdown](https://github.com/remarkjs/remark-
 ```js title="astro.config.mjs" ins={2,3,7,8,11}
 import { defineConfig } from 'astro/config';
 import remarkToc from 'remark-toc';
-import rehypeMinifyHtml from 'rehype-minify';
+import { rehypeAccessibleEmojis } from 'rehype-accessible-emojis';
 
 export default defineConfig({
   markdown: {
     remarkPlugins: [remarkToc],
-    rehypePlugins: [rehypeMinifyHtml],
+    rehypePlugins: [rehypeAccessibleEmojis],
     // Preserve Astro's default plugins: GitHub-flavored Markdown and Smartypants
     // default: false
     extendDefaultPlugins: true,
@@ -532,7 +553,7 @@ const { minutesRead } = Astro.props.frontmatter;
 
 Astro comes with built-in support for [Shiki](https://shiki.matsu.io/) and [Prism](https://prismjs.com/). This provides instant syntax highlighting for:
 
-- all code fences (\`\`\`) used in a Markdown (`.md`) or MDX (`.mdx`) file.
+- all code fences (\`\`\`) used in a Markdown (`.md` or `.markdown` etc.) or MDX (`.mdx`) file.
 - content within the [built-in `<Code />` component](/en/reference/api-reference/#code-) (powered by Shiki), or the [`<Prism />` component](/en/reference/api-reference/#prism-) (powered by Prism).
 
 Shiki is enabled by default, preconfigured with the `github-dark` theme. The compiled output will be limited to inline `style`s without any extraneous CSS classes, stylesheets, or client-side JS.
@@ -576,7 +597,22 @@ export default {
 };
 ```
 
-We also suggest [diving into their theme documentation](https://github.com/shikijs/shiki/blob/main/docs/themes.md#loading-theme) to explore loading custom theme, light vs dark mode toggles, or styling via CSS variables.
+#### Adding your own theme
+
+Instead of using one of Shiki’s predefined themes, you can import a custom theme from a local file.
+
+```js title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import customTheme from './my-shiki-theme.json';
+
+export default defineConfig({
+  markdown: {
+    shikiConfig: { theme: customTheme },
+  },
+});
+```
+
+We also suggest [diving into their theme documentation](https://github.com/shikijs/shiki/blob/main/docs/themes.md#loading-theme) to explore more about themes, light vs dark mode toggles, or styling via CSS variables.
 
 #### Prism configuration
 
